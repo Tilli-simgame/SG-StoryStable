@@ -1,3 +1,4 @@
 node_modules/*
 public_old
 src_example
+.DS_Store

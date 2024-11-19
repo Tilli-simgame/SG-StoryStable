@@ -6,6 +6,9 @@ const Game = () => {
     const [inventory, setInventory] = useState(["omena", "porkkana"]); // Pelaajan inventaario
     const [messages, setMessages] = useState([]); // Pelaajan viestit
     const [horseData, setHorseData] = useState(null); // Näytettävät hevosen tiedot
+    const [activeAction, setActiveAction] = useState(null); // Tila aktiiviselle napille
+    const [followUpAction, setFollowUpAction] = useState(null); // Yksittäinen jatkotoiminto
+    const [followUpOptions, setFollowUpOptions] = useState(null); // Lista vaihtoehdoista
 
     // Lataa ensimmäinen passage
     useEffect(() => {
@@ -18,6 +21,8 @@ const Game = () => {
             setCurrentPassage(passage);
             setMessages([]); // Tyhjennä viestit
             setHorseData(null); // Tyhjennä hevosen tiedot, jos oli aiemmin ladattuna
+            setFollowUpAction(null); // Nollaa yksittäinen jatkotoiminto
+            setFollowUpOptions(null); // Nollaa jatkotoimintojen lista
         } catch (error) {
             console.error("Virhe ladattaessa tarinan osaa:", error);
         }
@@ -26,26 +31,46 @@ const Game = () => {
     const loadHorseData = async (horseName) => {
         try {
             const horse = await import(`../../public/data/horses/${horseName}.json`);
-            setHorseData(horse);   
+            setHorseData(horse);
         } catch (error) {
             console.error("Virhe ladattaessa hevosen tietoja:", error);
         }
     };
 
     const handleAction = (action) => {
-        if (action.type === "read") {
+        if (action.type === "inspect") {
+            // Jos painike on jo aktiivinen, nollaa tila (sulje tarkastelu)
+            if (activeAction && activeAction.text === action.text) {
+                setMessages([]);
+                setFollowUpAction(null);
+                setFollowUpOptions(null);
+                setActiveAction(null); // Nollaa aktiivinen painike
+            } else {
+                // Aseta uusi aktiivinen painike ja näytä tulokset
+                setMessages([action.result]);
+                setActiveAction(action);
+
+                if (action.options) {
+                    setFollowUpOptions(action.options);
+                } else if (action.followUp) {
+                    setFollowUpAction(action.followUp);
+                }
+            }
+        } else if (action.type === "read") {
             // Lue hevosen tiedot
             loadHorseData(action.horse);
-        } else if (action.condition && !inventory.includes(action.condition)) {
-            setMessages([`Tarvitset ${action.condition} suorittaaksesi tämän.`]);
-        } else {
-            if (action.type === "feed" || action.type === "collect") {
-                setInventory((prev) =>
-                    action.condition
-                        ? prev.filter((item) => item !== action.condition)
-                        : prev
-                );
+        } else if (action.type === "collect") {
+            // Lisää esine inventaarioon, jos sitä ei jo ole
+            if (!inventory.includes(action.item)) {
+                setInventory((prev) => [...prev, action.item]);
+                setMessages([action.result]);
+            } else {
+                setMessages([`Sinulla on jo ${action.item}.`]);
             }
+            setFollowUpAction(null);
+            setFollowUpOptions(null);
+            setActiveAction(null); // Nollaa aktiivinen painike keräystoiminnon jälkeen
+        } else {
             setMessages([action.result]);
         }
     };
@@ -78,7 +103,6 @@ const Game = () => {
                 </div>
             </nav>
 
-            {/* Pääsisältö */}
             {/* Pääsisältö (kuva täyttää koko alueen) */}
             <main
                 className="flex-grow-1 position-relative"
@@ -89,22 +113,43 @@ const Game = () => {
                     backgroundRepeat: "no-repeat",
                 }}
             >
+                {/* Puhekupla sisältää otsikon ja tekstin */}
                 <div
-    className="speech-bubble"
-    style={{
-        textShadow: "1px 1px 2px rgba(0, 0, 0, 0.3)", // Hieman tekstiin varjoa
-    }}
->
-    <h1>{currentPassage.name}</h1>
-    <p>{currentPassage.text}</p>
-</div>
+                    className="speech-bubble"
+                    style={{
+                        textShadow: "1px 1px 2px rgba(0, 0, 0, 0.3)", // Hieman tekstiin varjoa
+                    }}
+                >
+                    <h1>{currentPassage.name}</h1>
+                    <p>{currentPassage.text}</p>
+                </div>
 
-                {/* Pelaajan viestit */}
+                {/* Näytä viestit ja jatkotoiminnot */}
                 {messages.length > 0 && (
                     <div className="alert alert-success mt-3">
                         {messages.map((msg, index) => (
                             <p key={index}>{msg}</p>
                         ))}
+
+                        {followUpAction && (
+                            <button
+                                className="btn btn-primary mt-2"
+                                onClick={() => handleAction(followUpAction)}
+                            >
+                                {followUpAction.text}
+                            </button>
+                        )}
+
+                        {followUpOptions &&
+                            followUpOptions.map((option, index) => (
+                                <button
+                                    key={index}
+                                    className="btn btn-primary mt-2 mx-2"
+                                    onClick={() => handleAction(option)}
+                                >
+                                    {option.text}
+                                </button>
+                            ))}
                     </div>
                 )}
 
@@ -139,7 +184,7 @@ const Game = () => {
                     {currentPassage.links.map((link, index) => (
                         <button
                             key={index}
-                            className="btn btn-primary mx-2 btn-secondary"
+                            className="btn btn-secondary mx-2"
                             onClick={() => loadPassage(link.pid)}
                         >
                             {link.link}
@@ -147,19 +192,20 @@ const Game = () => {
                     ))}
 
                     {/* Toiminnot */}
-                    {currentPassage.actions && (
-                        <>
-                            {currentPassage.actions.map((action, index) => (
-                                <button
-                                    key={index}
-                                    className="btn btn-secondary mx-2"
-                                    onClick={() => handleAction(action)}
-                                >
-                                    {action.text}
-                                </button>
-                            ))}
-                        </>
-                    )}
+                    {currentPassage.actions &&
+                        currentPassage.actions.map((action, index) => (
+                            <button
+                                key={index}
+                                className={`btn mx-2 ${
+                                    activeAction && activeAction.text === action.text
+                                        ? "btn-primary active-button"
+                                        : "btn-secondary"
+                                }`}
+                                onClick={() => handleAction(action)}
+                            >
+                                {action.text}
+                            </button>
+                        ))}
                 </div>
             </nav>
         </div>

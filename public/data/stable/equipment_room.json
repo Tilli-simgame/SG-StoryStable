@@ -1,28 +1,47 @@
 {
     "pid": "equipment_room",
     "name": "Varustetila",
-    "text": "Olet varustetilassa. Näet ympärilläsi satuloita, harjoja ja muita hevosten hoitamiseen liittyviä välineitä.",
+    "text": "Varustetila on täynnä hevosen hoitamiseen liittyviä varusteita.",
     "image": "equipment_room.jpg",
     "links": [
         {"link": "Palaa käytävälle", "pid": "hallway"}
     ],
     "actions": [
         {
-            "type": "collect",
-            "text": "Poimi harja",
-            "item": "harja",
-            "result": "Poimit harjan varustetilasta ja lisäsit sen inventaarioosi."
-        },
-        {
-            "type": "collect",
-            "text": "Poimi satulahuopa",
-            "item": "satulahuopa",
-            "result": "Poimit satulahuovan ja lisäsit sen inventaarioosi."
+            "type": "inspect",
+            "text": "Tutki raippoja",
+            "result": "Yksi raippa näyttää sopivalta.",
+            "followUp": {
+                "type": "collect",
+                "text": "Ota raippa",
+                "item": "raippa",
+                "result": "Poimit raipan ja lisäsit sen inventaarioosi."
+            }
         },
         {
             "type": "inspect",
-            "text": "Tutki varustetilaa tarkemmin",
-            "result": "Löydät täältä kaiken tarvittavan hevosen hoitamiseen!"
+            "text": "Tutki lääkekaappia",
+            "result": "Lääkekaapista löytyy sidetarpeita, linimenttiä ja antibioottivoidetta. Mitä haluaisit ottaa?",
+            "options": [
+                {
+                    "type": "collect",
+                    "text": "Ota sidetarpeet",
+                    "item": "sidetarpeet",
+                    "result": "Poimit sidetarpeet ja lisäsit ne inventaarioosi."
+                },
+                {
+                    "type": "collect",
+                    "text": "Ota linimentti",
+                    "item": "linimentti",
+                    "result": "Poimit linimentin ja lisäsit sen inventaarioosi."
+                },
+                {
+                    "type": "collect",
+                    "text": "Ota antibioottivoide",
+                    "item": "antibioottivoide",
+                    "result": "Poimit antibioottivoiteen ja lisäsit sen inventaarioosi."
+                }
+            ]
         }
     ]
 }
