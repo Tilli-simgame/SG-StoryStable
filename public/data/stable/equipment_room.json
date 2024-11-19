@@ -1,0 +1,28 @@
+{
+    "pid": "equipment_room",
+    "name": "Varustetila",
+    "text": "Olet varustetilassa. Näet ympärilläsi satuloita, harjoja ja muita hevosten hoitamiseen liittyviä välineitä.",
+    "image": "equipment_room.jpg",
+    "links": [
+        {"link": "Palaa käytävälle", "pid": "hallway"}
+    ],
+    "actions": [
+        {
+            "type": "collect",
+            "text": "Poimi harja",
+            "item": "harja",
+            "result": "Poimit harjan varustetilasta ja lisäsit sen inventaarioosi."
+        },
+        {
+            "type": "collect",
+            "text": "Poimi satulahuopa",
+            "item": "satulahuopa",
+            "result": "Poimit satulahuovan ja lisäsit sen inventaarioosi."
+        },
+        {
+            "type": "inspect",
+            "text": "Tutki varustetilaa tarkemmin",
+            "result": "Löydät täältä kaiken tarvittavan hevosen hoitamiseen!"
+        }
+    ]
+}

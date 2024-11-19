@@ -1,0 +1,11 @@
+{
+    "pid": 1,
+    "name": "Tallikäytävä",
+    "text": "Olet tallikäytävällä. Näet molemmilla puolillasi karsinoita ja käytävän päässä varustetilan.",
+    "image": "hallway.jpg",
+    "links": [
+        {"link": "Mene karsinaan 1", "pid": "stalls/stall01"},
+        {"link": "Mene karsinaan 2", "pid": "stalls/stall02"},
+        {"link": "Mene varustetilaan", "pid": "equipment_room"}
+    ]
+}

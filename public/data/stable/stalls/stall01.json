@@ -1,0 +1,33 @@
+{
+    "pid": "stalls/stall01",
+    "name": "Karsina 1",
+    "text": "Täällä on Tähti. Haluatko tehdä jotain?",
+    "image": "stall01.jpg",
+    "links": [
+        {"link": "Palaa käytävälle", "pid": "hallway"}
+    ],
+    "actions": [
+        {
+            "type": "feed",
+            "text": "Ruoki hevosta omenan kanssa",
+            "condition": "omena",
+            "result": "Hevonen syö omenan tyytyväisenä."
+        },
+        {
+            "type": "feed",
+            "text": "Ruoki hevosta porkkanan kanssa",
+            "condition": "porkkana",
+            "result": "Hevonen syö porkkanan tyytyväisenä."
+        },
+        {
+            "type": "pet",
+            "text": "Rapsuta hevosta",
+            "result": "Rapsutat hevosen kaulaa. Se näyttää nauttivan."
+        },
+        {
+            "type": "read",
+            "text": "Lue hevosen tiedot",
+            "horse": "tähti"
+        }
+    ]
+}
