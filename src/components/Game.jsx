@@ -10,7 +10,9 @@ const Game = () => {
     const [followUpAction, setFollowUpAction] = useState(null); // Yksittäinen jatkotoiminto
     const [followUpOptions, setFollowUpOptions] = useState(null); // Lista vaihtoehdoista
     const [modalData, setModalData] = useState(null); // Modalissa näytettävät tiedot
-    const [notifications, setNotifications] = useState([]); // Lista notifikaatioista
+    const [uiMessages, setUiMessages] = useState([]); // Yhdistetty tila reaktioille ja notifikaatioille
+
+
 
 
     // Lataa ensimmäinen passage
@@ -18,16 +20,16 @@ const Game = () => {
         loadPassage("hallway");
     }, []);
 
-
     useEffect(() => {
-        if (notifications.length > 0) {
-            const timer = setTimeout(() => {
-                setNotifications((prev) => prev.slice(1));
-            }, 3000);
-    
-            return () => clearTimeout(timer); // Puhdistus
-        }
-    }, [notifications]);
+      if (uiMessages.length > 0) {
+          const timer = setTimeout(() => {
+              setUiMessages((prev) => prev.slice(1)); // Poista ensimmäinen viesti
+          }, 3000);
+  
+          return () => clearTimeout(timer);
+      }
+  }, [uiMessages]);
+  
     
 
     const loadPassage = async (path) => {
@@ -53,85 +55,93 @@ const Game = () => {
     };
 
     const handleAction = (action) => {
-        if (action.type === "inspect") {
-            if (activeAction && activeAction.text === action.text) {
-                setActiveAction(null);
-                setModalData(null);
-            } else {
-                setActiveAction(action);
-                setModalData({
-                    title: action.text,
-                    content: action.result,
-                    options: action.options || [],
-                });
-            }
-        } else if (action.type === "read") {
-            // Lataa hevosen tiedot
-            loadHorseData(action.horse);
-        } else if (action.type === "feed") {
-            // Tarkista, onko tarvittava tavara inventaariossa
-            const item = action.condition; // Esine, jota tarvitaan ruokintaan
-            if (inventory[item] && inventory[item] > 0) {
-                // Vähennä esineen määrää inventaariosta
-                setInventory((prev) => ({
-                    ...prev,
-                    [item]: prev[item] - 1,
-                }));
-    
-                // Näytä ruokinnan tulos
-                setMessages([action.result]);
-    
-                // Notifikaatio onnistuneesta ruokinnasta
-                setNotifications((prev) => [
-                    ...prev,
-                    { message: `Ruokit hevosen: ${item}.`, id: Date.now() },
-                ]);
-            } else {
-                // Näytä viesti, jos tavaraa ei ole tarpeeksi
-                setMessages([`Sinulla ei ole ${item}.`]);
-                setNotifications((prev) => [
-                    ...prev,
-                    { message: `Sinulla ei ole ${item}.`, id: Date.now() },
-                ]);
-            }
-        } else if (action.type === "pet") {
-            // Näytä silittämisen tulos
-            setMessages([action.result]);
-    
-            // Notifikaatio silittämisestä
-            setNotifications((prev) => [
-                ...prev,
-                { message: "Rapsutit hevosta. Se näyttää tyytyväiseltä!", id: Date.now() },
-            ]);
-        } else if (action.type === "collect") {
-            setInventory((prev) => {
-                const currentCount = prev[action.item] || 0;
-                if (action.stackable) {
-                    return {
-                        ...prev,
-                        [action.item]: currentCount + 1,
-                    };
-                }
-                if (currentCount === 0) {
-                    return {
-                        ...prev,
-                        [action.item]: 1,
-                    };
-                }
-                setNotifications((prev) => [
-                    ...prev,
-                    { message: `Sinulla on jo ${action.item}.`, id: Date.now() },
-                ]);
-                return prev;
-            });
-            setNotifications((prev) => [
-                ...prev,
-                { message: `Lisätty tavara: ${action.item}`, id: Date.now() },
-            ]);
-        } else {
-            setMessages([action.result]);
-        }
-    };
+      switch (action.type) {
+          case "inspect":
+              if (activeAction && activeAction.text === action.text) {
+                  setActiveAction(null);
+                  setModalData(null);
+              } else {
+                  setActiveAction(action);
+                  setModalData({
+                      title: action.text,
+                      content: action.result,
+                      options: action.options || [],
+                  });
+              }
+              break;
+  
+          case "feed":
+              const item = action.condition; // Esine, jota tarvitaan ruokintaan
+              if (inventory[item] && inventory[item] > 0) {
+                  setInventory((prev) => ({
+                      ...prev,
+                      [item]: prev[item] - 1,
+                  }));
+                  setMessages([action.result]);
+  
+                  // Lisää hevosen reaktio viestilistaukseen
+                  setUiMessages((prev) => [
+                      ...prev,
+                      { type: "reaction", content: action.result, id: Date.now() },
+                  ]);
+              } else {
+                  setMessages([`Sinulla ei ole ${item}.`]);
+  
+                  // Lisää notifikaatio viestilistaukseen
+                  setUiMessages((prev) => [
+                      ...prev,
+                      { type: "notification", content: `Sinulla ei ole ${item}.`, id: Date.now() },
+                  ]);
+              }
+              break;
+  
+          case "pet":
+              setMessages([action.result]);
+  
+              // Lisää hevosen reaktio viestilistaukseen
+              setUiMessages((prev) => [
+                  ...prev,
+                  { type: "reaction", content: "Rapsutit hevosta. Se näyttää tyytyväiseltä!", id: Date.now() },
+              ]);
+              break;
+  
+          case "read":
+              loadHorseData(action.horse);
+              break;
+  
+          case "collect":
+              setInventory((prev) => {
+                  const currentCount = prev[action.item] || 0;
+                  if (action.stackable) {
+                      return {
+                          ...prev,
+                          [action.item]: currentCount + 1,
+                      };
+                  }
+                  if (currentCount === 0) {
+                      return {
+                          ...prev,
+                          [action.item]: 1,
+                      };
+                  }
+                  setUiMessages((prev) => [
+                      ...prev,
+                      { type: "notification", content: `Sinulla on jo ${action.item}.`, id: Date.now() },
+                  ]);
+                  return prev;
+              });
+              setUiMessages((prev) => [
+                  ...prev,
+                  { type: "notification", content: `Lisätty tavara: ${action.item}`, id: Date.now() },
+              ]);
+              break;
+  
+          default:
+              setMessages([action.result]);
+              break;
+      }
+  };
+  
     
 
     const closeModal = () => {
@@ -189,26 +199,7 @@ const Game = () => {
                     <h1>{currentPassage.name}</h1>
                     <p>{currentPassage.text}</p>
                 </div>
-                {/* Notifikaatiot */}
-<div className="notifications" style={{ position: "fixed", top: 100, right: 10, zIndex: 1050 }}>
-    {notifications.map((notification) => (
-        <div
-            key={notification.id}
-            className="alert alert-info alert-dismissible fade show"
-            role="alert"
-        >
-            {notification.message}
-            <button
-                type="button"
-                className="btn-close"
-                aria-label="Close"
-                onClick={() =>
-                    setNotifications((prev) => prev.filter((n) => n.id !== notification.id))
-                }
-            ></button>
-        </div>
-    ))}
-</div>
+
 
 {/* Modal Bootstrapilla */}
 {modalData && (
@@ -273,6 +264,27 @@ const Game = () => {
         </div>
     </div>
 )}
+{/* Viestit ja reaktiot */} 
+<div className="ui-messages" style={{ position: "fixed", top: 10, right: 10, zIndex: 1050 }}>
+    {uiMessages.map((message) => (
+        <div
+            key={message.id}
+            className={`alert ${
+                message.type === "notification" ? "alert-info" : "horse-reaction-bubble"
+            } alert-dismissible fade show`}
+            role="alert"
+        >
+            <p>{message.content}</p>
+            <button
+                type="button"
+                className="btn-close"
+                aria-label="Close"
+                onClick={() => setUiMessages((prev) => prev.filter((msg) => msg.id !== message.id))}
+            ></button>
+        </div>
+    ))}
+</div>
+
 
             </main>
 
