@@ -11,12 +11,14 @@
             "type": "inspect",
             "text": "Tutki raippoja",
             "result": "Yksi raippa näyttää sopivalta.",
-            "followUp": {
-                "type": "collect",
-                "text": "Ota raippa",
-                "item": "raippa",
-                "result": "Poimit raipan ja lisäsit sen inventaarioosi."
-            }
+            "options": [
+                {
+                    "type": "collect",
+                    "text": "Ota raippa",
+                    "item": "raippa",
+                    "result": "Poimit raipan ja lisäsit sen inventaarioosi."
+                }
+            ]
         },
         {
             "type": "inspect",
@@ -40,6 +42,84 @@
                     "text": "Ota antibioottivoide",
                     "item": "antibioottivoide",
                     "result": "Poimit antibioottivoiteen ja lisäsit sen inventaarioosi."
+                }
+            ]
+        },
+        {
+            "type": "inspect",
+            "text": "Tutki satuloita",
+            "result": "Näet useita erilaisia satuloita: este-, koulu-, lännen- ja yleissatula. Valitse itsellesi sopiva satula.",
+            "options": [
+                {
+                    "type": "collect",
+                    "text": "Ota estesatula",
+                    "item": "estesatula",
+                    "result": "Poimit estesatulan ja lisäsit sen inventaarioosi."
+                },
+                {
+                    "type": "collect",
+                    "text": "Ota koulusatula",
+                    "item": "koulusatula",
+                    "result": "Poimit koulusatulan ja lisäsit sen inventaarioosi."
+                },
+                {
+                    "type": "collect",
+                    "text": "Ota länkkärisatula",
+                    "item": "länkkärisatula",
+                    "result": "Poimit länkkärisatulan ja lisäsit sen inventaarioosi."
+                },
+                {
+                    "type": "collect",
+                    "text": "Ota yleissatula",
+                    "item": "yleissatula",
+                    "result": "Poimit yleissatulan ja lisäsit sen inventaarioosi."
+                }
+            ]
+        },
+        {
+            "type": "inspect",
+            "text": "Tutki suitsia",
+            "result": "Suitsihyllyllä on useita vaihtoehtoja. Voit valita perussuitset tai erityiset kuolaimettomat suitset.",
+            "options": [
+                {
+                    "type": "collect",
+                    "text": "Ota perussuitset",
+                    "item": "perussuitset",
+                    "result": "Poimit perussuitset ja lisäsit ne inventaarioosi."
+                },
+                {
+                    "type": "collect",
+                    "text": "Ota kuolaimettomat suitset",
+                    "item": "kuolaimettomat_suitset",
+                    "result": "Poimit kuolaimettomat suitset ja lisäsit ne inventaarioosi."
+                }
+            ]
+        },
+        {
+            "type": "inspect",
+            "text": "Tutki herkkuämpäriä",
+            "result": "Ämpäristä löytyy omenoita, porkkanoita ja kuivaa leipää. Valitse herkku hevoselle.",
+            "options": [
+                {
+                    "type": "collect",
+                    "text": "Ota omena",
+                    "item": "omena",
+                    "stackable": true,
+                    "result": "Poimit omenan ja lisäsit sen inventaarioosi."
+                },
+                {
+                    "type": "collect",
+                    "text": "Ota porkkana",
+                    "item": "porkkana",
+                    "stackable": true,
+                    "result": "Poimit porkkanan ja lisäsit sen inventaarioosi."
+                },
+                {
+                    "type": "collect",
+                    "text": "Ota kuivaa leipää",
+                    "item": "kuivaa_leipaa",
+                    "stackable": true,
+                    "result": "Poimit kuivaa leipää ja lisäsit sen inventaarioosi."
                 }
             ]
         }
