@@ -23,6 +23,11 @@
             "type": "pet",
             "text": "Rapsuta hevosta",
             "result": "Rapsutat hevosen kaulaa. Se näyttää nauttivan."
+        },
+        {
+            "type": "read",
+            "text": "Lue hevosen tiedot",
+            "horse": "hopea"
         }
     ]
 }
