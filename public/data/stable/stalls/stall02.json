@@ -2,6 +2,7 @@
     "pid": "stalls/stall02",
     "name": "Karsina 2",
     "text": "Täällä on hevonen. Haluatko tehdä jotain?",
+    "image": "stall02.jpg",
     "links": [
         {"link": "Palaa käytävälle", "pid": "hallway"}
     ],
