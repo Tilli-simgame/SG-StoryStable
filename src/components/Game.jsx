@@ -4,11 +4,11 @@ import "bootstrap/dist/css/bootstrap.min.css";
 const Game = () => {
     const [currentPassage, setCurrentPassage] = useState(null);
     const [inventory, setInventory] = useState({}); // Esineet ja niiden määrät
-    const [messages, setMessages] = useState([]); // Pelaajan viestit
+    //const [messages, setMessages] = useState([]); // Pelaajan viestit
     const [horseData, setHorseData] = useState(null); // Näytettävät hevosen tiedot
     const [activeAction, setActiveAction] = useState(null); // Tila aktiiviselle napille
-    const [followUpAction, setFollowUpAction] = useState(null); // Yksittäinen jatkotoiminto
-    const [followUpOptions, setFollowUpOptions] = useState(null); // Lista vaihtoehdoista
+    //const [followUpAction, setFollowUpAction] = useState(null); // Yksittäinen jatkotoiminto
+    //const [followUpOptions, setFollowUpOptions] = useState(null); // Lista vaihtoehdoista
     const [modalData, setModalData] = useState(null); // Modalissa näytettävät tiedot
     const [uiMessages, setUiMessages] = useState([]); // Yhdistetty tila reaktioille ja notifikaatioille
 
@@ -36,10 +36,10 @@ const Game = () => {
         try {
             const passage = await import(`../../public/data/stable/${path}.json`);
             setCurrentPassage(passage);
-            setMessages([]); // Tyhjennä viestit
+            //setMessages([]); // Tyhjennä viestit
             setHorseData(null); // Tyhjennä hevosen tiedot, jos oli aiemmin ladattuna
-            setFollowUpAction(null); // Nollaa yksittäinen jatkotoiminto
-            setFollowUpOptions(null); // Nollaa jatkotoimintojen lista
+            //setFollowUpAction(null); // Nollaa yksittäinen jatkotoiminto
+            //setFollowUpOptions(null); // Nollaa jatkotoimintojen lista
         } catch (error) {
             console.error("Virhe ladattaessa tarinan osaa:", error);
         }
@@ -77,7 +77,7 @@ const Game = () => {
                       ...prev,
                       [item]: prev[item] - 1,
                   }));
-                  setMessages([action.result]);
+                  //setMessages([action.result]);
   
                   // Lisää hevosen reaktio viestilistaukseen
                   setUiMessages((prev) => [
@@ -85,7 +85,7 @@ const Game = () => {
                       { type: "reaction", content: action.result, id: Date.now() },
                   ]);
               } else {
-                  setMessages([`Sinulla ei ole ${item}.`]);
+                  //setMessages([`Sinulla ei ole ${item}.`]);
   
                   // Lisää notifikaatio viestilistaukseen
                   setUiMessages((prev) => [
@@ -96,7 +96,7 @@ const Game = () => {
               break;
   
           case "pet":
-              setMessages([action.result]);
+              //setMessages([action.result]);
   
               // Lisää hevosen reaktio viestilistaukseen
               setUiMessages((prev) => [
@@ -137,7 +137,7 @@ const Game = () => {
               break;
   
           default:
-              setMessages([action.result]);
+              //setMessages([action.result]);
               break;
       }
   };
